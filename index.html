@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Portfolio — Développeur créatif & Designer. Bots Discord, identités visuelles, expériences numériques." />
+  <title>Portfolio — Votre Nom</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Bebas Neue"', 'sans-serif'],
+            body: ['"DM Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            red: { 400: '#f87171', 500: '#ef4444', 600: '#dc2626', 700: '#b91c1c' }
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.7s ease both',
+            'pulse-slow': 'pulse 4s ease-in-out infinite',
+            'spin-slow': 'spin 12s linear infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(24px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; }
+    body { background: #080808; color: #e5e5e5; font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+    /* ── Custom scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #080808; }
+    ::-webkit-scrollbar-thumb { background: #dc2626; }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+    }
+
+    /* ── Hero grid lines ── */
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(220,38,38,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220,38,38,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── Glowing red dot ── */
+    .glow-dot {
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(220,38,38,0.25) 0%, transparent 70%);
+      filter: blur(40px);
+      animation: pulseDot 5s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* ── Rotating ring ── */
+    .ring {
+      border: 1px solid rgba(220,38,38,0.18);
+      border-top-color: rgba(220,38,38,0.6);
+      animation: spin 10s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Section reveal ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Project card entry animation ── */
+    .project-card { animation: fadeUp 0.5s ease both; }
+
+    /* ── Form inputs ── */
+    .form-input {
+      background: transparent;
+      border: 1px solid #262626;
+      color: #e5e5e5;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .form-input:focus { border-color: #dc2626; }
+    .form-input::placeholder { color: #525252; }
+
+    /* ── Cursor dot ── */
+    #cursor-dot {
+      width: 8px; height: 8px; background: #dc2626;
+      border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+    #cursor-ring {
+      width: 32px; height: 32px; border: 1px solid rgba(220,38,38,0.5);
+      border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    }
+    @media (hover: none) { #cursor-dot, #cursor-ring { display: none; } }
+  </style>
+</head>
+<body>
+
+<!-- ── Custom cursor ──────────────────────────────────────────────────────── -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════════════════════════════════════ -->
+<nav id="navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
+  <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#hero" class="font-display text-2xl tracking-widest text-white flex items-center gap-2">
+      <span class="inline-block w-2 h-2 bg-red-600 rotate-45"></span>
+      VOTRE NOM
+    </a>
+
+    <!-- Desktop nav -->
+    <ul class="hidden md:flex items-center gap-10 text-xs font-semibold tracking-widest uppercase text-neutral-400">
+      <li><a href="#about" class="hover:text-red-400 transition-colors duration-300">À propos</a></li>
+      <li><a href="#projects" class="hover:text-red-400 transition-colors duration-300">Projets</a></li>
+      <li><a href="#contact" class="hover:text-red-400 transition-colors duration-300">Contact</a></li>
+    </ul>
+
+    <!-- CTA -->
+    <a href="#contact"
+       class="hidden md:inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-5 py-2.5 bg-red-600 text-white border border-red-600 hover:bg-transparent hover:text-red-400 transition-all duration-300">
+      Travailler ensemble
+    </a>
+
+    <!-- Burger -->
+    <button id="menu-toggle" class="md:hidden text-neutral-400 hover:text-red-400 transition-colors" aria-label="Menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-neutral-800 bg-black/95 backdrop-blur-xl">
+    <ul class="flex flex-col px-6 py-6 gap-6 text-sm font-semibold tracking-widest uppercase text-neutral-400">
+      <li><a href="#about" class="hover:text-red-400 transition-colors">À propos</a></li>
+      <li><a href="#projects" class="hover:text-red-400 transition-colors">Projets</a></li>
+      <li><a href="#contact" class="hover:text-red-400 transition-colors">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════════════════ -->
+<section id="hero" class="relative min-h-screen flex items-center hero-grid overflow-hidden">
+  <!-- Background glow -->
+  <div class="absolute top-1/3 right-1/4 glow-dot pointer-events-none"></div>
+  <div class="absolute bottom-1/4 left-1/5 w-48 h-48 bg-red-900/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Rotating ring decoration -->
+  <div class="absolute top-24 right-12 w-40 h-40 ring rounded-full pointer-events-none opacity-60"></div>
+  <div class="absolute bottom-20 left-8 w-24 h-24 ring rounded-full pointer-events-none opacity-40"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20 grid md:grid-cols-2 gap-16 items-center">
+    <!-- Left: Text -->
+    <div>
+      <!-- Status badge -->
+      <div class="inline-flex items-center gap-3 mb-8 px-4 py-2 border border-neutral-800 bg-neutral-950/60 backdrop-blur">
+        <span class="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+        <span class="text-xs font-mono tracking-widest text-neutral-400 uppercase">Disponible pour missions</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="font-display text-7xl md:text-9xl leading-none text-white mb-6 tracking-wider">
+        CRÉATEUR<br />
+        <span class="text-transparent" style="-webkit-text-stroke: 1px rgba(220,38,38,0.7)">DIGITAL</span>
+      </h1>
+
+      <p class="text-neutral-400 text-lg leading-relaxed max-w-md mb-10">
+        Développeur de bots Discord & designer graphique. Je conçois des outils puissants et des identités visuelles qui <em class="text-white not-italic font-semibold">marquent les esprits</em>.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap gap-4">
+        <a href="#projects"
+           class="inline-flex items-center gap-3 px-7 py-3.5 bg-red-600 text-white text-sm font-bold tracking-widest uppercase border border-red-600 hover:bg-transparent hover:text-red-400 transition-all duration-300 group">
+          Voir mes projets
+          <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+        <a href="#contact"
+           class="inline-flex items-center gap-3 px-7 py-3.5 bg-transparent text-neutral-300 text-sm font-bold tracking-widest uppercase border border-neutral-700 hover:border-red-500 hover:text-red-400 transition-all duration-300">
+          Me contacter
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="flex gap-10 mt-14 pt-10 border-t border-neutral-900">
+        <div>
+          <p class="font-display text-4xl text-red-500">50+</p>
+          <p class="text-xs text-neutral-500 uppercase tracking-widest mt-1">Serveurs Discord</p>
+        </div>
+        <div>
+          <p class="font-display text-4xl text-red-500">30+</p>
+          <p class="text-xs text-neutral-500 uppercase tracking-widest mt-1">Projets livrés</p>
+        </div>
+        <div>
+          <p class="font-display text-4xl text-red-500">3 ans</p>
+          <p class="text-xs text-neutral-500 uppercase tracking-widest mt-1">D'expérience</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Visual element -->
+    <div class="hidden md:flex items-center justify-center relative">
+      <div class="relative w-72 h-72">
+        <!-- Outer ring -->
+        <div class="absolute inset-0 ring rounded-full"></div>
+        <!-- Inner ring -->
+        <div class="absolute inset-8 border border-red-900/30 rounded-full ring" style="animation-direction: reverse; animation-duration: 7s;"></div>
+        <!-- Center block -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="w-32 h-32 bg-red-600/10 border border-red-600/30 flex items-center justify-center">
+            <span class="font-display text-5xl text-red-500 tracking-widest">YN</span>
+          </div>
+        </div>
+        <!-- Corner dots -->
+        <div class="absolute -top-1 -right-1 w-2 h-2 bg-red-600 rotate-45"></div>
+        <div class="absolute -bottom-1 -left-1 w-2 h-2 bg-red-600 rotate-45"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+    <div class="w-px h-12 bg-gradient-to-b from-transparent to-red-600 animate-pulse"></div>
+    <span class="text-xs font-mono tracking-widest text-neutral-500 uppercase">Scroll</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     ABOUT
+════════════════════════════════════════════════════════════════════════════ -->
+<section id="about" class="py-32 relative z-10">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-20 items-center">
+      <!-- Left: Code block -->
+      <div class="reveal">
+        <div class="border border-neutral-800 bg-neutral-950 overflow-hidden">
+          <!-- Terminal bar -->
+          <div class="flex items-center gap-2 px-5 py-3 border-b border-neutral-800 bg-neutral-900">
+            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <span class="ml-3 text-xs font-mono text-neutral-500">profil.json</span>
+          </div>
+          <!-- Code content -->
+          <pre class="p-6 text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-neutral-500">{</span>
+  <span class="text-red-400">"nom"</span><span class="text-neutral-400">:</span> <span class="text-green-400">"Votre Nom"</span><span class="text-neutral-500">,</span>
+  <span class="text-red-400">"specialites"</span><span class="text-neutral-400">:</span> <span class="text-neutral-500">[</span>
+    <span class="text-green-400">"Discord Bots"</span><span class="text-neutral-500">,</span>
+    <span class="text-green-400">"Graphisme"</span><span class="text-neutral-500">,</span>
+    <span class="text-green-400">"Web Design"</span>
+  <span class="text-neutral-500">],</span>
+  <span class="text-red-400">"stack"</span><span class="text-neutral-400">:</span> <span class="text-neutral-500">{</span>
+    <span class="text-red-400">"langages"</span><span class="text-neutral-400">:</span> <span class="text-green-400">"JS, Python"</span><span class="text-neutral-500">,</span>
+    <span class="text-red-400">"outils"</span><span class="text-neutral-400">:</span> <span class="text-green-400">"PS, AI, AE"</span>
+  <span class="text-neutral-500">},</span>
+  <span class="text-red-400">"dispo"</span><span class="text-neutral-400">:</span> <span class="text-yellow-400">true</span>
+<span class="text-neutral-500">}</span></code></pre>
+        </div>
+      </div>
+
+      <!-- Right: Text -->
+      <div class="reveal">
+        <p class="text-xs font-mono text-red-500 tracking-widest uppercase mb-4">// À propos</p>
+        <h2 class="font-display text-6xl text-white leading-none mb-6 tracking-wider">QUI<br />SUIS-JE ?</h2>
+        <div class="space-y-5 text-neutral-400 leading-relaxed">
+          <p>
+            Passionné par la création numérique depuis 3 ans, je me spécialise dans le développement de <strong class="text-white">bots Discord performants</strong> et la conception d'identités visuelles percutantes.
+          </p>
+          <p>
+            Mon approche combine la précision technique et le sens esthétique pour livrer des projets qui se démarquent vraiment de la masse.
+          </p>
+        </div>
+
+        <!-- Skills -->
+        <div class="mt-10 space-y-4">
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-neutral-500 w-20">Discord.js</span>
+            <div class="flex-1 h-px bg-neutral-800 relative">
+              <div class="absolute inset-y-0 left-0 bg-red-600" style="width: 88%"></div>
+            </div>
+            <span class="text-xs font-mono text-neutral-500">88%</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-neutral-500 w-20">Photoshop</span>
+            <div class="flex-1 h-px bg-neutral-800 relative">
+              <div class="absolute inset-y-0 left-0 bg-red-600" style="width: 82%"></div>
+            </div>
+            <span class="text-xs font-mono text-neutral-500">82%</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-xs font-mono text-neutral-500 w-20">After FX</span>
+            <div class="flex-1 h-px bg-neutral-800 relative">
+              <div class="absolute inset-y-0 left-0 bg-red-600" style="width: 70%"></div>
+            </div>
+            <span class="text-xs font-mono text-neutral-500">70%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     PROJECTS
+════════════════════════════════════════════════════════════════════════════ -->
+<section id="projects" class="py-32 relative z-10">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Header -->
+    <div class="reveal flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+      <div>
+        <p class="text-xs font-mono text-red-500 tracking-widest uppercase mb-4">// Projets</p>
+        <h2 class="font-display text-6xl text-white leading-none tracking-wider">MES<br /><span class="text-transparent" style="-webkit-text-stroke: 1px rgba(255,255,255,0.4)">RÉALISATIONS</span></h2>
+      </div>
+
+      <!-- Filters -->
+      <div id="filters" class="flex flex-wrap gap-2">
+        <!-- Populated by script.js -->
+        <div class="px-5 py-2 border border-neutral-800 text-neutral-600 text-sm animate-pulse">Chargement…</div>
+      </div>
+    </div>
+
+    <!-- Projects grid -->
+    <div id="projects-grid"
+         class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+         style="transition: opacity 0.4s ease, transform 0.4s ease;">
+      <!-- Populated by script.js -->
+      <div class="h-72 bg-neutral-950 border border-neutral-900 animate-pulse rounded-none"></div>
+      <div class="h-72 bg-neutral-950 border border-neutral-900 animate-pulse rounded-none"></div>
+      <div class="h-72 bg-neutral-950 border border-neutral-900 animate-pulse rounded-none"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CONTACT
+════════════════════════════════════════════════════════════════════════════ -->
+<section id="contact" class="py-32 relative z-10">
+  <!-- Background accent -->
+  <div class="absolute bottom-0 right-0 w-96 h-96 bg-red-900/5 blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="reveal text-center mb-16">
+      <p class="text-xs font-mono text-red-500 tracking-widest uppercase mb-4">// Contact</p>
+      <h2 class="font-display text-6xl md:text-8xl text-white leading-none tracking-wider mb-6">PARLONS<br />PROJET.</h2>
+      <p class="text-neutral-400 max-w-lg mx-auto">
+        Une idée ? Un besoin ? Je réponds généralement sous <strong class="text-white">24h</strong>.
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form id="contact-form" class="reveal space-y-5">
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2">Votre nom</label>
+          <input type="text" placeholder="Jean Dupont" required
+                 class="form-input w-full px-5 py-3.5 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2">Email</label>
+          <input type="email" placeholder="jean@exemple.fr" required
+                 class="form-input w-full px-5 py-3.5 text-sm" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2">Sujet</label>
+        <input type="text" placeholder="Bot Discord, Logo, Bannière…"
+               class="form-input w-full px-5 py-3.5 text-sm" />
+      </div>
+      <div>
+        <label class="block text-xs font-mono text-neutral-500 uppercase tracking-widest mb-2">Message</label>
+        <textarea rows="5" placeholder="Décrivez votre projet…" required
+                  class="form-input w-full px-5 py-3.5 text-sm resize-none"></textarea>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4">
+        <!-- Social links -->
+        <div class="flex items-center gap-6">
+          <a href="#" class="text-neutral-500 hover:text-red-400 transition-colors text-xs font-mono tracking-widest uppercase">GitHub</a>
+          <span class="text-neutral-800">|</span>
+          <a href="#" class="text-neutral-500 hover:text-red-400 transition-colors text-xs font-mono tracking-widest uppercase">Discord</a>
+          <span class="text-neutral-800">|</span>
+          <a href="#" class="text-neutral-500 hover:text-red-400 transition-colors text-xs font-mono tracking-widest uppercase">Twitter</a>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+                class="inline-flex items-center gap-3 px-8 py-3.5 bg-red-600 text-white text-sm font-bold tracking-widest uppercase border border-red-600 hover:bg-transparent hover:text-red-400 transition-all duration-300 group">
+          Envoyer le message
+          <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════════════════════ -->
+<footer class="relative z-10 border-t border-neutral-900 py-8">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <span class="font-display text-xl text-neutral-700 tracking-widest">VOTRE NOM</span>
+    <p class="text-xs font-mono text-neutral-700">© 2025 — Tous droits réservés</p>
+    <div class="flex items-center gap-2 text-xs font-mono text-neutral-700">
+      <span class="inline-block w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+      Disponible pour missions
+    </div>
+  </div>
+</footer>
+
+<!-- ─────────────────────────────────────────────────────────────────────────── -->
+<script src="./script.js"></script>
+<script>
+  // ── Custom cursor ──────────────────────────────────────────────────────────
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let mouseX = 0, mouseY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+    ring.style.left = mouseX + 'px'; ring.style.top = mouseY + 'px';
+  });
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '50px'; ring.style.height = '50px';
+      ring.style.opacity = '0.4';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '32px'; ring.style.height = '32px';
+      ring.style.opacity = '1';
+    });
+  });
+
+  // ── Scroll reveal ──────────────────────────────────────────────────────────
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

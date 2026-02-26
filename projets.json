@@ -1,0 +1,23 @@
+[
+  {
+    "titre": "NexusBot",
+    "categorie": "Discord",
+    "description": "Bot Discord multifonction avec système de modération avancée, commandes slash, music player et tableau de bord web intégré. Plus de 500 serveurs actifs.",
+    "image_url": "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=600&q=80",
+    "lien_demo": "https://github.com"
+  },
+  {
+    "titre": "Logo — CryptoForge",
+    "categorie": "Graphisme",
+    "description": "Identité visuelle complète pour une startup Web3. Logo minimaliste avec symbolisme géométrique, déclinaisons dark/light, guide de marque complet.",
+    "image_url": "https://images.unsplash.com/photo-1626544827763-d516dce335e2?w=600&q=80",
+    "lien_demo": "https://behance.net"
+  },
+  {
+    "titre": "Bannière — StreamPulse",
+    "categorie": "Graphisme",
+    "description": "Bannière Twitch & YouTube pour streamer gaming. Design néon cyberpunk, animations After Effects, overlay intégré et écrans de transition personnalisés.",
+    "image_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80",
+    "lien_demo": "https://behance.net"
+  }
+]
